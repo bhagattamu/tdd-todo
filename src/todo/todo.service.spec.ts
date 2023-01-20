@@ -63,12 +63,32 @@ describe('TodoService', () => {
       );
     });
 
+    it('throw bad request error when priority is not low | medium | high', async () => {
+      const todoRequest: any = {
+        task: 'test',
+        priority: 'asdasd',
+        status: 'pending',
+      };
+
+      expect(service.add(todoRequest)).rejects.toThrow(BadRequestException);
+    });
+
     it('throw bad request error when status is empty', async () => {
       const { id, createdAt: _, ...todoRequest } = todoStub();
       todoRequest.status = undefined;
       await expect(service.add(todoRequest)).rejects.toThrow(
         BadRequestException,
       );
+    });
+
+    it('throw bad request error when status is not pending | completed | cancelled', async () => {
+      const todoRequest: any = {
+        task: 'test',
+        priority: 'high',
+        status: 'test',
+      };
+
+      expect(service.add(todoRequest)).rejects.toThrow(BadRequestException);
     });
   });
 });
