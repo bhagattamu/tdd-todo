@@ -37,14 +37,15 @@ export class TodoService {
     } else {
       throw new BadRequestException('Please provide status');
     }
-    const createdTodo = await this.todoRepository.save(todoRequest);
+    return await this.todoRepository.save(todoRequest);
+  }
 
-    return {
-      id: createdTodo._id.toString(),
-      task: createdTodo.task,
-      priority: createdTodo.priority,
-      status: createdTodo.status,
-      createdAt: createdTodo.createdAt,
-    };
+  /**
+   * Function to get todo list
+   * @returns {Todo[]} Todo list
+   */
+  async getTodoList(): Promise<Todo[]> {
+    const todoList = await this.todoRepository.findTodo();
+    return todoList;
   }
 }

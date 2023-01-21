@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { todoStub } from './stubs/todo.stub';
-import { TodoController } from './todo.controller';
-import { Todo } from './todo.interface';
-import { TodoService } from './todo.service';
-jest.mock('./todo.service');
+import { todoStub } from '../stubs/todo.stub';
+import { TodoController } from '../todo.controller';
+import { Todo } from '../todo.interface';
+import { TodoService } from '../todo.service';
+
+jest.mock('../todo.service');
 
 describe('TodoController', () => {
   let controller: TodoController;
@@ -24,7 +25,7 @@ describe('TodoController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('add', () => {
+  describe('add task', () => {
     const { id, createdAt: _, ...todoRequest } = todoStub();
     let todo: Todo;
 
@@ -39,6 +40,29 @@ describe('TodoController', () => {
     it('should return todo', () => {
       expect(todo.id).toEqual(id);
       expect(todo.task).toEqual(todoRequest.task);
+    });
+  });
+
+  describe('get tasks', () => {
+    let todoList: Todo[];
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+
+    beforeEach(async () => {
+      await controller.add(todoRequest);
+      todoList = await controller.getTodoList();
+    });
+
+    it('should call todoService', () => {
+      expect(service.getTodoList).toBeCalled();
+    });
+
+    it('should return a list of todo', () => {
+      expect(todoList.length).toEqual(1);
+      if (todoList.length === 1) {
+        const [todo] = todoList;
+        expect(todo.id).toEqual(id);
+        expect(todo.task).toEqual(todoRequest.task);
+      }
     });
   });
 });

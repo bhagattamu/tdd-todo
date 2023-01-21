@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { todoStub } from '../stubs/todo.stub';
 import { TodoRequest } from '../todo.interface';
 
 export const TodoRepository = jest.fn().mockReturnValue({
@@ -18,5 +19,15 @@ export const TodoRepository = jest.fn().mockReturnValue({
       ...todoRequest,
       createdAt: new Date(),
     };
+  }),
+  findTodo: jest.fn().mockImplementation(() => {
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+    return [
+      {
+        _id: new Types.ObjectId(),
+        ...todoRequest,
+        createdAt: new Date(),
+      },
+    ];
   }),
 });

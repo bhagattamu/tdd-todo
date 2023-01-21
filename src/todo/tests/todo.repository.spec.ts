@@ -1,28 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/mongoose';
 import { connect, Connection, Model } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Todo, TodoSchema } from './schema/todo.schema';
-import { TodoRepository } from './todo.repository';
-import { getModelToken } from '@nestjs/mongoose';
-import { todoStub } from './stubs/todo.stub';
-import { ConflictException } from '@nestjs/common';
+import { Todo as TodoDocument, TodoSchema } from '../schema/todo.schema';
+import { TodoRepository } from '../todo.repository';
+import { todoStub } from '../stubs/todo.stub';
+import { Todo } from '../todo.interface';
 
 describe('TodoRepository', () => {
   let repository: TodoRepository;
   let mongod: MongoMemoryServer;
   let mongoConnection: Connection;
-  let todoModel: Model<Todo>;
+  let todoModel: Model<TodoDocument>;
 
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create();
     const uri = mongod.getUri();
     mongoConnection = (await connect(uri)).connection;
-    todoModel = mongoConnection.model(Todo.name, TodoSchema);
+    todoModel = mongoConnection.model(TodoDocument.name, TodoSchema);
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TodoRepository,
         {
-          provide: getModelToken(Todo.name),
+          provide: getModelToken(TodoDocument.name),
           useValue: todoModel,
         },
       ],
@@ -81,6 +81,24 @@ describe('TodoRepository', () => {
       expect(repository.save(todoRequest)).rejects.toThrowError(
         'Please provide status',
       );
+    });
+  });
+
+  describe('findTodo', () => {
+    let todo: Todo;
+    let todoList: Todo[];
+
+    beforeEach(async () => {
+      const { id, createdAt: _, ...todoRequest } = todoStub();
+      todo = await repository.save(todoRequest);
+      todoList = await repository.findTodo();
+    });
+
+    it('should return todoList', async () => {
+      const [savedTodo] = todoList;
+      expect(todoList.length).toEqual(1);
+      expect(todo.id).toEqual(savedTodo.id);
+      expect(todo.task).toEqual(savedTodo.task);
     });
   });
 });
