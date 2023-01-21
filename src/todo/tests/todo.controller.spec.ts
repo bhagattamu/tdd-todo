@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { todoStub } from './stubs/todo.stub';
-import { TodoController } from './todo.controller';
-import { Todo } from './todo.interface';
-import { TodoService } from './todo.service';
-jest.mock('./todo.service');
+import { todoStub } from '../stubs/todo.stub';
+import { TodoController } from '../todo.controller';
+import { Todo } from '../todo.interface';
+import { TodoService } from '../todo.service';
+
+jest.mock('../todo.service');
 
 describe('TodoController', () => {
   let controller: TodoController;

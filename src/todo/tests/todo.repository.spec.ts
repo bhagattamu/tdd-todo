@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/mongoose';
 import { connect, Connection, Model } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Todo, TodoSchema } from './schema/todo.schema';
-import { TodoRepository } from './todo.repository';
-import { getModelToken } from '@nestjs/mongoose';
-import { todoStub } from './stubs/todo.stub';
-import { ConflictException } from '@nestjs/common';
+import { Todo, TodoSchema } from '../schema/todo.schema';
+import { TodoRepository } from '../todo.repository';
+import { todoStub } from '../stubs/todo.stub';
 
 describe('TodoRepository', () => {
   let repository: TodoRepository;

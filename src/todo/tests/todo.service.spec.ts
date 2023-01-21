@@ -1,11 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { todoStub } from './stubs/todo.stub';
-import { Todo } from './todo.interface';
-import { TodoRepository } from './todo.repository';
-import { TodoService } from './todo.service';
+import { todoStub } from '../stubs/todo.stub';
+import { Todo } from '../todo.interface';
+import { TodoRepository } from '../todo.repository';
+import { TodoService } from '../todo.service';
 
-jest.mock('./todo.repository');
+jest.mock('../todo.repository');
 
 describe('TodoService', () => {
   let service: TodoService;
