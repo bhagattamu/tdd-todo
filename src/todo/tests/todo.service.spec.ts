@@ -91,4 +91,26 @@ describe('TodoService', () => {
       expect(service.add(todoRequest)).rejects.toThrow(BadRequestException);
     });
   });
+
+  describe('getTodoList', () => {
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+    let todo: Todo;
+    let todoList: Todo[];
+
+    beforeEach(async () => {
+      todo = await service.add(todoRequest);
+      todoList = await service.getTodoList();
+    });
+
+    it('should call respository service', () => {
+      expect(repository.findTodo).toBeCalled();
+    });
+
+    it('should return todoList', () => {
+      const [savedTodo] = todoList;
+      expect(todoList.length).toEqual(1);
+      expect(todo.id).toEqual(savedTodo.id);
+      expect(todo.task).toEqual(savedTodo.task);
+    });
+  });
 });

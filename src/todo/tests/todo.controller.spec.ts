@@ -25,7 +25,7 @@ describe('TodoController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('add', () => {
+  describe('add task', () => {
     const { id, createdAt: _, ...todoRequest } = todoStub();
     let todo: Todo;
 
@@ -40,6 +40,29 @@ describe('TodoController', () => {
     it('should return todo', () => {
       expect(todo.id).toEqual(id);
       expect(todo.task).toEqual(todoRequest.task);
+    });
+  });
+
+  describe('get tasks', () => {
+    let todoList: Todo[];
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+
+    beforeEach(async () => {
+      await controller.add(todoRequest);
+      todoList = await controller.getTodoList();
+    });
+
+    it('should call todoService', () => {
+      expect(service.getTodoList).toBeCalled();
+    });
+
+    it('should return a list of todo', () => {
+      expect(todoList.length).toEqual(1);
+      if (todoList.length === 1) {
+        const [todo] = todoList;
+        expect(todo.id).toEqual(id);
+        expect(todo.task).toEqual(todoRequest.task);
+      }
     });
   });
 });
