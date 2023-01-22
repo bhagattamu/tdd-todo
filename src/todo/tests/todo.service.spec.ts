@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Types } from 'mongoose';
 import { todoStub } from '../stubs/todo.stub';
 import { Todo } from '../todo.interface';
 import { TodoRepository } from '../todo.repository';
@@ -111,6 +112,26 @@ describe('TodoService', () => {
       expect(todoList.length).toEqual(1);
       expect(todo.id).toEqual(savedTodo.id);
       expect(todo.task).toEqual(savedTodo.task);
+    });
+  });
+
+  describe('getTodoById', () => {
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+    let todo: Todo;
+
+    beforeEach(async () => {
+      todo = await service.add(todoRequest);
+      await service.getTodoById(todo.id);
+    });
+
+    it('should call todo repository', () => {
+      expect(repository.findTodoById).toHaveBeenCalledWith(todo.id);
+    });
+
+    it('should find todo', async () => {
+      const foundTodo = await service.getTodoById(todo.id);
+      expect(foundTodo.id).toEqual(todo.id);
+      expect(foundTodo.task).toEqual(todo.task);
     });
   });
 });

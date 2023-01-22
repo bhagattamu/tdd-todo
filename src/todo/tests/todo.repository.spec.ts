@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { connect, Connection, Model } from 'mongoose';
+import { connect, Connection, Model, Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Todo as TodoDocument, TodoSchema } from '../schema/todo.schema';
 import { TodoRepository } from '../todo.repository';
@@ -99,6 +99,28 @@ describe('TodoRepository', () => {
       expect(todoList.length).toEqual(1);
       expect(todo.id).toEqual(savedTodo.id);
       expect(todo.task).toEqual(savedTodo.task);
+    });
+  });
+
+  describe('findTodoById', () => {
+    let todo: Todo;
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+
+    beforeEach(async () => {
+      todo = await repository.save(todoRequest);
+    });
+
+    it('should return todo', async () => {
+      const foundTodo = await repository.findTodoById(todo.id);
+      expect(foundTodo).toBeDefined();
+      expect(foundTodo.id).toEqual(todo.id);
+      expect(foundTodo.task).toEqual(todo.task);
+    });
+
+    it('should return undefined', async () => {
+      const randomId = new Types.ObjectId().toString();
+      const foundTodo = await repository.findTodoById(randomId);
+      expect(foundTodo).toBeUndefined();
     });
   });
 });

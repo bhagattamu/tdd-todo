@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { Todo, TodoRequest } from './todo.interface';
 import { TodoService } from './todo.service';
 
@@ -16,5 +16,11 @@ export class TodoController {
   async getTodoList(): Promise<Todo[]> {
     const todoList = await this.todoService.getTodoList();
     return todoList;
+  }
+
+  @Get(':id')
+  async getTodoById(@Param('id') id: string): Promise<Todo> {
+    const todo = await this.todoService.getTodoById(id);
+    return todo;
   }
 }

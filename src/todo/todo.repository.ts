@@ -41,4 +41,18 @@ export class TodoRepository {
       createdAt: todo.createdAt,
     }));
   }
+
+  async findTodoById(id: string): Promise<Todo> {
+    const todo = await this.TodoModel.findById(id);
+    if (todo) {
+      return {
+        id: todo._id.toString(),
+        task: todo.task,
+        priority: todo.priority,
+        status: todo.status,
+        createdAt: todo.createdAt,
+      };
+    }
+    return undefined;
+  }
 }

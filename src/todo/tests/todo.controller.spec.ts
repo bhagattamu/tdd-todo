@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Types } from 'mongoose';
 import { todoStub } from '../stubs/todo.stub';
 import { TodoController } from '../todo.controller';
 import { Todo } from '../todo.interface';
@@ -63,6 +64,24 @@ describe('TodoController', () => {
         expect(todo.id).toEqual(id);
         expect(todo.task).toEqual(todoRequest.task);
       }
+    });
+  });
+
+  describe('getTaskById', () => {
+    let todo: Todo;
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+    beforeEach(async () => {
+      todo = await controller.add(todoRequest);
+    });
+
+    it('should call todoService', async () => {
+      await controller.getTodoById(todo.id);
+      expect(service.getTodoById).toHaveBeenCalledWith(todo.id);
+    });
+
+    it('should return todo', async () => {
+      const foundTodo = await controller.getTodoById(todo.id);
+      expect(foundTodo.task).toEqual(todoRequest.task);
     });
   });
 });
