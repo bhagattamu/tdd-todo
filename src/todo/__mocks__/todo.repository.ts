@@ -30,4 +30,12 @@ export const TodoRepository = jest.fn().mockReturnValue({
       },
     ];
   }),
+  findTodoById: jest.fn().mockImplementation((todoId: string) => {
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+    return {
+      _id: todoId,
+      ...todoRequest,
+      createdAt: new Date(),
+    };
+  }),
 });

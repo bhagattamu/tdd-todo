@@ -48,4 +48,9 @@ export class TodoService {
     const todoList = await this.todoRepository.findTodo();
     return todoList;
   }
+
+  async getTodoById(id: string): Promise<any> {
+    const todo = await this.todoRepository.findTodoById(id);
+    return todo;
+  }
 }
