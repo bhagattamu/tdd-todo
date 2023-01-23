@@ -50,7 +50,7 @@ describe('TodoController', () => {
 
     beforeEach(async () => {
       await controller.add(todoRequest);
-      todoList = await controller.getTodoList();
+      todoList = await controller.getTodoList(false);
     });
 
     it('should call todoService', () => {
@@ -82,6 +82,32 @@ describe('TodoController', () => {
     it('should return todo', async () => {
       const foundTodo = await controller.getTodoById(todo.id);
       expect(foundTodo.task).toEqual(todoRequest.task);
+    });
+  });
+
+  describe('complete', () => {
+    let todo: Todo;
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+    beforeEach(async () => {
+      todo = await controller.add(todoRequest);
+      await controller.complete(todo.id);
+    });
+
+    it('should call todoService.complete method', () => {
+      expect(service.complete).toBeCalledWith(todo.id);
+    });
+  });
+
+  describe('cancel', () => {
+    let todo: Todo;
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+    beforeEach(async () => {
+      todo = await controller.add(todoRequest);
+      await controller.cancel(todo.id);
+    });
+
+    it('should call todoService.cancel method', () => {
+      expect(service.cancel).toBeCalledWith(todo.id);
     });
   });
 });

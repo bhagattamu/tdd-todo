@@ -113,6 +113,16 @@ describe('TodoService', () => {
       expect(todo.id).toEqual(savedTodo.id);
       expect(todo.task).toEqual(savedTodo.task);
     });
+
+    it('should return todoList without cancelled status', async () => {
+      const newTodo = await service.add(todoRequest);
+      await service.cancel(newTodo.id);
+      const todoList = await service.getTodoList();
+      const [savedTodo] = todoList;
+      expect(todoList.length).toEqual(1);
+      expect(todo.id).toEqual(savedTodo.id);
+      expect(todo.task).toEqual(savedTodo.task);
+    });
   });
 
   describe('getTodoById', () => {
@@ -132,6 +142,44 @@ describe('TodoService', () => {
       const foundTodo = await service.getTodoById(todo.id);
       expect(foundTodo.id).toEqual(todo.id);
       expect(foundTodo.task).toEqual(todo.task);
+    });
+  });
+
+  describe('complete', () => {
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+    let todo: Todo;
+
+    beforeEach(async () => {
+      todo = await service.add(todoRequest);
+      await service.complete(todo.id);
+    });
+
+    it('should call repository', () => {
+      expect(repository.updateTodoStatus).toBeCalled();
+    });
+
+    it('should change status to completed', async () => {
+      const completedTodo = await repository.findTodoById(todo.id);
+      expect(completedTodo.status).toEqual('completed');
+    });
+  });
+
+  describe('cancel', () => {
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+    let todo: Todo;
+
+    beforeEach(async () => {
+      todo = await service.add(todoRequest);
+      await service.cancel(todo.id);
+    });
+
+    it('should call repository', () => {
+      expect(repository.updateTodoStatus).toBeCalled();
+    });
+
+    it('should change status to cancelled', async () => {
+      const cancelledTodo = await repository.findTodoById(todo.id);
+      expect(cancelledTodo.status).toEqual('cancelled');
     });
   });
 });
