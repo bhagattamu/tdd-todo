@@ -21,6 +21,13 @@ export class Todo {
   @Prop({
     type: SchemaTypes.String,
     required: [true, 'Please provide status'],
+    validate: {
+      validator: (value: Status) => {
+        const validValues: Status[] = ['pending', 'cancelled', 'completed'];
+        return Promise.resolve(validValues.includes(value));
+      },
+      message: 'Please provide valid status',
+    },
   })
   status: Status;
 

@@ -87,9 +87,9 @@ describe('TodoRepository', () => {
   describe('findTodo', () => {
     let todo: Todo;
     let todoList: Todo[];
+    const { id, createdAt: _, ...todoRequest } = todoStub();
 
     beforeEach(async () => {
-      const { id, createdAt: _, ...todoRequest } = todoStub();
       todo = await repository.save(todoRequest);
       todoList = await repository.findTodo();
     });
@@ -99,6 +99,15 @@ describe('TodoRepository', () => {
       expect(todoList.length).toEqual(1);
       expect(todo.id).toEqual(savedTodo.id);
       expect(todo.task).toEqual(savedTodo.task);
+    });
+
+    it('should return filter cancelled todo', async () => {
+      const newTodo = await repository.save(todoRequest);
+      await repository.updateTodoStatus(newTodo.id, 'cancelled');
+      const todoList = await repository.findTodo({ withOutCancel: true });
+      expect(todoList.length).toEqual(1);
+      expect(todo.id).toEqual(todoList[0].id);
+      expect(todo.task).toEqual(todoList[0].task);
     });
   });
 
@@ -121,6 +130,35 @@ describe('TodoRepository', () => {
       const randomId = new Types.ObjectId().toString();
       const foundTodo = await repository.findTodoById(randomId);
       expect(foundTodo).toBeUndefined();
+    });
+  });
+
+  describe('updateTodo', () => {});
+
+  describe('updateTodoStatus', () => {
+    let todo: Todo;
+    const { id, createdAt: _, ...todoRequest } = todoStub();
+
+    beforeEach(async () => {
+      todo = await repository.save(todoRequest);
+    });
+
+    it('should change status to pending', async () => {
+      await repository.updateTodoStatus(todo.id, 'pending');
+      const updatedTodo = await repository.findTodoById(todo.id);
+      expect(updatedTodo.status).toEqual('pending');
+    });
+
+    it('should change status to completed', async () => {
+      await repository.updateTodoStatus(todo.id, 'completed');
+      const updatedTodo = await repository.findTodoById(todo.id);
+      expect(updatedTodo.status).toEqual('completed');
+    });
+
+    it('should change status to cancelled', async () => {
+      await repository.updateTodoStatus(todo.id, 'cancelled');
+      const updatedTodo = await repository.findTodoById(todo.id);
+      expect(updatedTodo.status).toEqual('cancelled');
     });
   });
 });

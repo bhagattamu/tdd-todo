@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Todo as TodoDocument } from './schema/todo.schema';
-import { Todo } from './todo.interface';
+import { Status, Todo } from './todo.interface';
 
 @Injectable()
 export class TodoRepository {
@@ -29,10 +29,13 @@ export class TodoRepository {
 
   /**
    * Function to get todo list form mongo database
+   * @param {{withOutCancel: boolean}} options Option to hide cancelled todo
    * @returns {Todo[]} Todo list
    */
-  async findTodo(): Promise<Todo[]> {
-    const todoDocuments = await this.TodoModel.find();
+  async findTodo(options?: { withOutCancel: boolean }): Promise<Todo[]> {
+    const todoDocuments = await this.TodoModel.find({
+      ...(options?.withOutCancel ? { status: { $ne: 'cancelled' } } : {}),
+    }).sort({ createdAt: -1 });
     return todoDocuments.map((todo) => ({
       id: todo._id.toString(),
       task: todo.task,
@@ -42,6 +45,11 @@ export class TodoRepository {
     }));
   }
 
+  /**
+   * Function to find todo by id
+   * @param {string} id Todo Id
+   * @returns {Todo} Todo
+   */
   async findTodoById(id: string): Promise<Todo> {
     const todo = await this.TodoModel.findById(id);
     if (todo) {
@@ -54,5 +62,18 @@ export class TodoRepository {
       };
     }
     return undefined;
+  }
+
+  /**
+   * Function to change todo status
+   * @param {string} id Todo Id
+   * @param {Status} status Todo status
+   */
+  async updateTodoStatus(id: string, status: Status): Promise<void> {
+    await this.TodoModel.findByIdAndUpdate(id, {
+      $set: {
+        status,
+      },
+    });
   }
 }

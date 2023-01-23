@@ -44,13 +44,34 @@ export class TodoService {
    * Function to get todo list
    * @returns {Todo[]} Todo list
    */
-  async getTodoList(): Promise<Todo[]> {
-    const todoList = await this.todoRepository.findTodo();
+  async getTodoList(options?: { withOutCancel: boolean }): Promise<Todo[]> {
+    const todoList = await this.todoRepository.findTodo(options);
     return todoList;
   }
 
-  async getTodoById(id: string): Promise<any> {
+  /**
+   * Function to get todo by id
+   * @param {string} id Todo Id
+   * @returns {Todo} Todo
+   */
+  async getTodoById(id: string): Promise<Todo> {
     const todo = await this.todoRepository.findTodoById(id);
     return todo;
+  }
+
+  /**
+   * Function to complete todo
+   * @param {string} id Todo Id
+   */
+  async complete(id: string): Promise<void> {
+    await this.todoRepository.updateTodoStatus(id, 'completed');
+  }
+
+  /**
+   * Function to cancel todo
+   * @param {string} id Todo Id
+   */
+  async cancel(id: string): Promise<void> {
+    await this.todoRepository.updateTodoStatus(id, 'cancelled');
   }
 }

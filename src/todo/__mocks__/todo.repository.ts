@@ -1,6 +1,9 @@
 import { Types } from 'mongoose';
 import { todoStub } from '../stubs/todo.stub';
-import { TodoRequest } from '../todo.interface';
+import { Status, TodoRequest } from '../todo.interface';
+
+const todoId = new Types.ObjectId().toString();
+let todoStatus: Status = 'pending';
 
 export const TodoRepository = jest.fn().mockReturnValue({
   save: jest.fn().mockImplementation((todoRequest: TodoRequest) => {
@@ -13,9 +16,10 @@ export const TodoRepository = jest.fn().mockReturnValue({
     if (!todoRequest.status) {
       throw new Error('Please provide status');
     }
+    todoStatus = 'pending';
 
     return {
-      _id: new Types.ObjectId(),
+      id: todoId,
       ...todoRequest,
       createdAt: new Date(),
     };
@@ -24,8 +28,9 @@ export const TodoRepository = jest.fn().mockReturnValue({
     const { id, createdAt: _, ...todoRequest } = todoStub();
     return [
       {
-        _id: new Types.ObjectId(),
+        id: todoId,
         ...todoRequest,
+        status: todoStatus,
         createdAt: new Date(),
       },
     ];
@@ -33,9 +38,22 @@ export const TodoRepository = jest.fn().mockReturnValue({
   findTodoById: jest.fn().mockImplementation((todoId: string) => {
     const { id, createdAt: _, ...todoRequest } = todoStub();
     return {
-      _id: todoId,
+      id: todoId,
       ...todoRequest,
+      status: todoStatus,
       createdAt: new Date(),
     };
   }),
+  updateTodoStatus: jest
+    .fn()
+    .mockImplementation((todoId: string, status: Status) => {
+      const { id, createdAt: _, ...todoRequest } = todoStub();
+      todoStatus = status;
+      return {
+        id: todoId,
+        ...todoRequest,
+        status: todoStatus,
+        createdAt: new Date(),
+      };
+    }),
 });
