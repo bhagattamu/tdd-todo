@@ -10,8 +10,8 @@ export const TodoRepository = jest.fn().mockReturnValue({
     if (!todoRequest.task) {
       throw new Error('Please provide task');
     }
-    if (!todoRequest.priority) {
-      throw new Error('Please provide priority');
+    if (!todoRequest.task.priority) {
+      throw new Error('Please provide task priority');
     }
     if (!todoRequest.status) {
       throw new Error('Please provide status');

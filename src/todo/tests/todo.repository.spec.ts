@@ -5,7 +5,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Todo as TodoDocument, TodoSchema } from '../schema/todo.schema';
 import { TodoRepository } from '../todo.repository';
 import { todoStub } from '../stubs/todo.stub';
-import { Todo } from '../todo.interface';
+import { Status, Todo } from '../todo.interface';
 
 describe('TodoRepository', () => {
   let repository: TodoRepository;
@@ -55,13 +55,13 @@ describe('TodoRepository', () => {
       const { id, createdAt: _, ...todoRequest } = todoStub();
       todo = await repository.save(todoRequest);
       expect(todo.task).toEqual(todoRequest.task);
-      expect(todo.priority).toEqual(todoRequest.priority);
+      expect(todo.task.priority).toEqual(todoRequest.task.priority);
       expect(todo.status).toEqual(todoRequest.status);
     });
 
     it('should throw required error when task empty', async () => {
       const { id, createdAt: _, ...todoRequest } = todoStub();
-      todoRequest.task = '';
+      todoRequest.task.detail = undefined;
       expect(repository.save(todoRequest)).rejects.toThrowError(
         'Please provide task',
       );
@@ -69,17 +69,24 @@ describe('TodoRepository', () => {
 
     it('should throw required error when priority empty', async () => {
       const { id, createdAt: _, ...todoRequest } = todoStub();
-      todoRequest.priority = undefined;
+      todoRequest.task.priority = undefined;
       expect(repository.save(todoRequest)).rejects.toThrowError(
-        'Please provide priority',
+        'Please provide task priority',
       );
     });
 
-    it('should throw required error when status empty', async () => {
+    it('should default status to pending', async () => {
       const { id, createdAt: _, ...todoRequest } = todoStub();
       todoRequest.status = undefined;
+      const todo = await repository.save(todoRequest);
+      expect(todo.status).toEqual('pending');
+    });
+
+    it('should throw please provide valid status error', async () => {
+      const { id, createdAt: _, ...todoRequest } = todoStub();
+      todoRequest.status = 'error' as Status;
       expect(repository.save(todoRequest)).rejects.toThrowError(
-        'Please provide status',
+        'Please provide valid status',
       );
     });
   });

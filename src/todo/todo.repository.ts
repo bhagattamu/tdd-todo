@@ -20,8 +20,10 @@ export class TodoRepository {
     const savedTodo = await new this.TodoModel(todo).save();
     return {
       id: savedTodo._id.toString(),
-      task: savedTodo.task,
-      priority: savedTodo.priority,
+      task: {
+        detail: savedTodo.task.detail,
+        priority: savedTodo.task.priority,
+      },
       status: savedTodo.status,
       createdAt: savedTodo.createdAt,
     };
@@ -38,8 +40,10 @@ export class TodoRepository {
     }).sort({ createdAt: -1 });
     return todoDocuments.map((todo) => ({
       id: todo._id.toString(),
-      task: todo.task,
-      priority: todo.priority,
+      task: {
+        detail: todo.task.detail,
+        priority: todo.task.priority,
+      },
       status: todo.status,
       createdAt: todo.createdAt,
     }));
@@ -55,8 +59,10 @@ export class TodoRepository {
     if (todo) {
       return {
         id: todo._id.toString(),
-        task: todo.task,
-        priority: todo.priority,
+        task: {
+          detail: todo.task.detail,
+          priority: todo.task.priority,
+        },
         status: todo.status,
         createdAt: todo.createdAt,
       };

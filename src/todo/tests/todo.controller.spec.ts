@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Types } from 'mongoose';
 import { todoStub } from '../stubs/todo.stub';
 import { TodoController } from '../todo.controller';
 import { Todo } from '../todo.interface';
