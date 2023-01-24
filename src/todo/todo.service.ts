@@ -15,27 +15,16 @@ export class TodoService {
     if (!todoRequest.task) {
       throw new BadRequestException('Please provide task');
     }
-    if (todoRequest.priority) {
+    if (todoRequest.task.priority) {
       const correctPriority =
-        todoRequest.priority === 'low' ||
-        todoRequest.priority === 'medium' ||
-        todoRequest.priority === 'high';
+        todoRequest.task.priority === 'low' ||
+        todoRequest.task.priority === 'medium' ||
+        todoRequest.task.priority === 'high';
       if (!correctPriority) {
         throw new BadRequestException('Please provide correct priority');
       }
     } else {
-      throw new BadRequestException('Please provide priority');
-    }
-    if (todoRequest.status) {
-      const correctStatus =
-        todoRequest.status === 'cancelled' ||
-        todoRequest.status === 'completed' ||
-        todoRequest.status === 'pending';
-      if (!correctStatus) {
-        throw new BadRequestException('Please provide correct status');
-      }
-    } else {
-      throw new BadRequestException('Please provide status');
+      throw new BadRequestException('Please provide task priority');
     }
     return await this.todoRepository.save(todoRequest);
   }

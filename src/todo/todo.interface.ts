@@ -2,16 +2,19 @@ export type Priority = 'low' | 'medium' | 'high';
 
 export type Status = 'pending' | 'completed' | 'cancelled';
 
+export interface Task {
+  detail: string;
+  priority: Priority;
+}
+
 export interface Todo {
   id: string;
-  task: string;
-  priority: Priority;
+  task: Task;
   status: Status;
   createdAt: Date;
 }
 
 export interface TodoRequest {
-  task: string;
-  priority: Priority;
+  task: Task;
   status: Status;
 }
